@@ -51,6 +51,7 @@ class Ffmpeg < Formula
   depends_on "xz"
 
   unless OS.mac?
+    depends_on "jack" => :optional
     depends_on "zlib"
     depends_on "bzip2"
     depends_on "linuxbrew/xorg/libxv"
@@ -107,11 +108,11 @@ class Ffmpeg < Formula
       --enable-libfreetype
       --enable-frei0r
       --enable-libass
-      --disable-libjack
-      --disable-indev=jack
     ]
 
     if OS.mac?
+      args << "--disable-libjack"
+      args << "--disable-indev=jack"
       args << "--enable-opencl"
       args << "--enable-videotoolbox"
     end
@@ -155,6 +156,12 @@ class Ffmpeg < Formula
       args << "--extra-ldflags=-L#{HOMEBREW_PREFIX}/include"
     end
 
+    if build.with? "jack"
+      args << "--enable-libjack"
+      args << "--enable-indev=jack"
+    end
+
+    # packages that need additional license options
     if build.with?("opencore-amr") || build.with?("libvmaf")
       args << "--enable-version3"
     end
